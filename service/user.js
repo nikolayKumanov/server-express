@@ -55,10 +55,11 @@ async function register(email, username, hashedPassword) {
 }
 
 function generateToken(userData) {
+    console.log(userData)
     const token = jwt.sign({
         _id: userData._id,
         email: userData.email
-    }, process.env.TOKEN_SECRET);
+    }, 'simpleSecret');
     return token;
 }
 

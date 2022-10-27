@@ -7,7 +7,7 @@ module.exports = () => (req, res, next) => {
 
 
         try {
-            const userData = jwt.verify(token, process.env.TOKEN_SECRET);
+            const userData = jwt.verify(token, 'simpleSecret');
             req.user = userData;
 
             next()
