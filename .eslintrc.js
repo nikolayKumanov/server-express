@@ -17,5 +17,6 @@ module.exports = {
     "no-return-await": 0,
     "prefer-destructuring": ["error", { object: false, array: false }],
     "no-use-before-define": ["error", { functions: false, classes: false }],
+    "no-unused-vars": "off",
   },
 };
