@@ -1,35 +1,32 @@
+const BlogModel = require("../models/Blog");
 
-const blogModel = require('../models/Blog');
-
-
-
-async function createBlog(blogData){
-    const newBlog = new blogModel(blogData);
-    await newBlog.save();
-    return newBlog;
+async function createBlog(blogData) {
+  const newBlog = new BlogModel(blogData);
+  await newBlog.save();
+  return newBlog;
 }
-
-async function getBlogs(){
-    const blogs = await blogModel.find({}).populate('author').lean();
-    return blogs;
+async function getBlogs() {
+  const blogs = await BlogModel.find({}).populate("author").lean();
+  return blogs;
 }
-async function getBlogById(id){
-    return await blogModel.findById(id).populate('author').lean()
+async function getBlogById(id) {
+  return await BlogModel.findById(id).populate("author").lean();
 }
-async function deleteBlog(id){
-    return  await blogModel.findByIdAndDelete(id)
+async function deleteBlog(id) {
+  return await BlogModel.findByIdAndDelete(id);
 }
-
-async function getBlogsByCategory(category){
-    const blogs = await blogModel.find({category: category}).populate('author').lean();
-    return blogs
+async function getBlogsByCategory(category) {
+  const blogs = await BlogModel
+    .find({ category })
+    .populate("author")
+    .lean();
+  return blogs;
 }
-
 
 module.exports = {
-    createBlog,
-    getBlogs,
-    deleteBlog,
-    getBlogById,
-    getBlogsByCategory
-}
+  createBlog,
+  getBlogs,
+  deleteBlog,
+  getBlogById,
+  getBlogsByCategory,
+};
