@@ -1,23 +1,16 @@
+/* eslint-disable prefer-template */
 const router = require("express").Router();
 const multer = require("multer");
 const blogService = require("../service/blogs");
 const { isUser } = require("../service/guards");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, ".uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage });
+const upload = multer({ storage: multer.memoryStorage() });
 router.get("/", async (req, res) => {
   try {
     const blogs = await blogService.getBlogs();
     blogs.forEach((singleBlog) => {
-      let { createdAt, author, readTime } = singleBlog;
-      author = author.username;
+      let { createdAt, readTime } = singleBlog;
+      singleBlog.author = singleBlog.author.username;
       createdAt = createdAt.toISOString().split("T")[0];
       readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
     });
@@ -31,10 +24,9 @@ router.get("/category/:category", async (req, res) => {
   try {
     const blogs = await blogService.getBlogsByCategory(req.params.category);
     blogs.forEach((singleBlog) => {
-      let { createdAt, author, readTime } = singleBlog;
-      author = author.email;
-      createdAt = createdAt.toISOString().split("T")[0];
-      readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
+      singleBlog.author = singleBlog.author.email;
+      singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
+      singleBlog.readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
     });
     res.status(201).json(blogs);
   } catch (error) {
@@ -47,7 +39,10 @@ router.post("/", upload.single("image"), async (req, res) => {
     title: req.body.title,
     subTitle: req.body.subTitle,
     category: req.body.category,
-    image: req.body.image,
+    image: {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    },
     description: req.body.description,
     author: req.user._id,
   };
@@ -71,10 +66,9 @@ router.post("/", upload.single("image"), async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const blog = await blogService.getBlogById(req.params.id);
-    let { author, createdAt, readTime } = blog;
-    author = author.username;
-    createdAt = createdAt.toISOString().split("T")[0];
-    readTime = Math.ceil(blog.description.split(" ").length / 200);
+    blog.author = blog.author.username;
+    blog.createdAt = blog.createdAt.toISOString().split("T")[0];
+    blog.readTime = Math.ceil(blog.description.split(" ").length / 200);
     res.status(200).json(blog);
   } catch (error) {
     console.log(error);
