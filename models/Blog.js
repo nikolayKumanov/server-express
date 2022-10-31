@@ -14,7 +14,7 @@ const schema = new Schema({
   category: { type: String, required: true },
   description: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  image: { type: String },
+  image: { data: Buffer, contentType: String },
   likedBy: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
   addedToFavourites: [
     { type: Schema.Types.ObjectId, ref: "User", default: [] },

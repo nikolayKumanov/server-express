@@ -1,6 +1,7 @@
 const express = require("express");
 
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -11,14 +12,15 @@ module.exports = (app) => {
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, X-Authorization",
+      "Access-Control-Allow-Headers, Origin,Accept, 'x-www-form-urlencoded', X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, X-Authorization",
     );
 
     next();
   });
 
   app.use(cookieParser());
-  app.use(express.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
   app.use("/uploads", express.static("uploads"));
   app.use((req, res, next) => {
     console.log(">>>", req.method);
