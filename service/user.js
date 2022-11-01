@@ -104,6 +104,15 @@ async function removeFromBookmarks(blogId, userId) {
   );
   await user.save();
 }
+async function getCommentedBlogs(userId) {
+  const user = await UserModel.findById(userId)
+    .populate({
+      path: "commentedBlogs",
+      populate: { path: "author", model: "User" },
+    })
+    .lean();
+  return user.commentedBlogs;
+}
 module.exports = {
   createUser,
   getUserById,
@@ -116,4 +125,5 @@ module.exports = {
   addToBookmarks,
   getBookmarks,
   removeFromBookmarks,
+  getCommentedBlogs,
 };

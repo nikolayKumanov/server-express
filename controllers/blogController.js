@@ -26,7 +26,9 @@ router.get("/category/:category", async (req, res) => {
     blogs.forEach((singleBlog) => {
       singleBlog.author = singleBlog.author.email;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
-      singleBlog.readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
+      singleBlog.readTime = Math.ceil(
+        singleBlog.description.split(" ").length / 200
+      );
     });
     res.status(201).json(blogs);
   } catch (error) {
@@ -66,9 +68,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const blog = await blogService.getBlogById(req.params.id);
-    blog.author = blog.author.username;
-    blog.createdAt = blog.createdAt.toISOString().split("T")[0];
-    blog.readTime = Math.ceil(blog.description.split(" ").length / 200);
+    transformBlog(blog);
     res.status(200).json(blog);
   } catch (error) {
     console.log(error);
@@ -84,4 +84,29 @@ router.delete("/:id", isUser(), async (req, res) => {
     res.status(400).json({ "error-message": error.message });
   }
 });
+router.put("/:id", isUser(), async (req, res) => {
+  try {
+    const blog = await blogService.commentBlog(
+      req.params.id,
+      req.body.comment,
+      req.user._id,
+    );
+    transformBlog(blog);
+    res.status(200).send(blog);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ "error-message": error.message });
+  }
+});
+
 module.exports = router;
+
+function transformBlog(blog) {
+  blog.author = blog.author.username;
+  blog.createdAt = blog.createdAt.toISOString().split("T")[0];
+  blog.readTime = Math.ceil(blog.description.split(" ").length / 200);
+  blog.comments.forEach((singleComment) => {
+    singleComment.user = singleComment.user.username;
+  });
+  return blog;
+}

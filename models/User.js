@@ -10,6 +10,7 @@ const schema = new Schema({
   followers: [],
   following: [],
   bookmarks: [{ type: Schema.Types.ObjectId, ref: "Blog", default: [] }],
+  commentedBlogs: [{ type: Schema.Types.ObjectId, ref: "Blog", default: [] }],
 });
 
 module.exports = model("User", schema);

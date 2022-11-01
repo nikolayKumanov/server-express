@@ -8,7 +8,7 @@ module.exports = (app) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
     res.setHeader(
       "Access-Control-Allow-Methods",
-      "OPTIONS, GET, POST, DELETE, PATCH",
+      "OPTIONS, GET, POST, PUT, DELETE, PATCH",
     );
     res.setHeader(
       "Access-Control-Allow-Headers",

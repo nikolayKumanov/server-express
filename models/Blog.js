@@ -20,6 +20,10 @@ const schema = new Schema({
     { type: Schema.Types.ObjectId, ref: "User", default: [] },
   ],
   author: { type: Schema.Types.ObjectId, ref: "User" },
+  comments: [{
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    userComment: String,
+  }],
 });
 
 module.exports = model("Blog", schema);
