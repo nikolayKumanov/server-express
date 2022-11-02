@@ -56,4 +56,20 @@ router.get("/bookmarked", async (req, res) => {
     console.log(error);
   }
 });
+router.get("/commented-blogs", isUser(), async (req, res) => {
+  try {
+    const commentedBlogs = await userService.getCommentedBlogs(req.user._id);
+    commentedBlogs.forEach((singleBlog) => {
+      singleBlog.author = {
+        username: singleBlog.author.username,
+        authorId: singleBlog.author._id,
+      };
+      singleBlog.comments.filter((singleComment) => singleComment.user === req.user._id);
+    });
+    res.status(200).json(commentedBlogs);
+  } catch (error) {
+    res.status(400).json({ "error-message": error.message });
+    console.log(error);
+  }
+});
 module.exports = router;
