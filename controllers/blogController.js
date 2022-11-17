@@ -9,10 +9,11 @@ router.get("/", async (req, res) => {
   try {
     const blogs = await blogService.getBlogs();
     blogs.forEach((singleBlog) => {
-      let { createdAt, readTime } = singleBlog;
       singleBlog.author = singleBlog.author.username;
-      createdAt = createdAt.toISOString().split("T")[0];
-      readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
+      singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
+      singleBlog.readTime = Math.ceil(
+        singleBlog.description.split(" ").length / 200
+      );
     });
     res.status(201).json(blogs);
   } catch (error) {
@@ -89,7 +90,7 @@ router.put("/:id", isUser(), async (req, res) => {
     const blog = await blogService.commentBlog(
       req.params.id,
       req.body.comment,
-      req.user._id,
+      req.user._id
     );
     transformBlog(blog);
     res.status(200).send(blog);
@@ -98,7 +99,23 @@ router.put("/:id", isUser(), async (req, res) => {
     res.status(400).json({ "error-message": error.message });
   }
 });
-
+router.get("/search/:title", async (req, res) => {
+  try {
+    const title = req.params.title;
+    const blogs = await blogService.getSeachedBlogs(title);
+    blogs.forEach((singleBlog) => {
+      singleBlog.author = singleBlog.author.username;
+      singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
+      singleBlog.readTime = Math.ceil(
+        singleBlog.description.split(" ").length / 200
+      );
+    });
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ "error-message": error.message });
+  }
+});
 module.exports = router;
 
 function transformBlog(blog) {
