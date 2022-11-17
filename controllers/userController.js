@@ -44,10 +44,11 @@ router.get("/bookmarked", async (req, res) => {
   try {
     const bookmarks = await userService.getBookmarks(req.user._id);
     bookmarks.forEach((singleBlog) => {
-      let { createdAt, author, readTime } = singleBlog;
-      author = author.username;
-      createdAt = createdAt.toISOString().split("T")[0];
-      readTime = Math.ceil(singleBlog.description.split(" ").length / 200);
+      singleBlog.author = singleBlog.author.username;
+      singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
+      singleBlog.readTime = Math.ceil(
+        singleBlog.description.split(" ").length / 200
+      );
     });
 
     res.status(200).json(bookmarks);
@@ -64,7 +65,9 @@ router.get("/commented-blogs", isUser(), async (req, res) => {
         username: singleBlog.author.username,
         authorId: singleBlog.author._id,
       };
-      singleBlog.comments.filter((singleComment) => singleComment.user === req.user._id);
+      singleBlog.comments.filter(
+        (singleComment) => singleComment.user === req.user._id
+      );
     });
     res.status(200).json(commentedBlogs);
   } catch (error) {

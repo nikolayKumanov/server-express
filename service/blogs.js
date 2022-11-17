@@ -33,7 +33,12 @@ async function commentBlog(blogId, comment, userId) {
     .populate(["author", "comments.user"])
     .lean();
 }
-
+async function getSeachedBlogs(title) {
+  const blogs = await BlogModel.find({
+    title: { $regex: title, $options: "i" },
+  }).populate("author").lean();
+  return blogs;
+}
 module.exports = {
   createBlog,
   getBlogs,
@@ -41,4 +46,5 @@ module.exports = {
   getBlogById,
   getBlogsByCategory,
   commentBlog,
+  getSeachedBlogs,
 };
