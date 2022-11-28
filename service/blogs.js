@@ -6,8 +6,8 @@ async function createBlog(blogData) {
   await newBlog.save();
   return newBlog;
 }
-async function getBlogs() {
-  const blogs = await BlogModel.find({}).populate("author").lean();
+async function getBlogs(skip, limit) {
+  const blogs = await BlogModel.find({}).skip(skip).limit(limit).populate("author").lean();
   return blogs;
 }
 async function getBlogById(id) {
@@ -36,7 +36,9 @@ async function commentBlog(blogId, comment, userId) {
 async function getSeachedBlogs(title) {
   const blogs = await BlogModel.find({
     title: { $regex: title, $options: "i" },
-  }).populate("author").lean();
+  })
+    .populate("author")
+    .lean();
   return blogs;
 }
 module.exports = {
