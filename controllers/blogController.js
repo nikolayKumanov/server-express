@@ -7,7 +7,9 @@ const { isUser } = require("../service/guards");
 const upload = multer({ storage: multer.memoryStorage() });
 router.get("/", async (req, res) => {
   try {
-    const blogs = await blogService.getBlogs();
+    const skip = req.query.skip;
+    const limit = req.query.limit;
+    const blogs = await blogService.getBlogs(skip, limit);
     blogs.forEach((singleBlog) => {
       singleBlog.author = singleBlog.author.username;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
