@@ -36,8 +36,15 @@ async function commentBlog(blogId, comment, userId) {
 async function getSeachedBlogs(title) {
   const blogs = await BlogModel.find({
     title: { $regex: title, $options: "i" },
-  }).populate("author").lean();
+  })
+    .populate("author")
+    .lean();
   return blogs;
+}
+async function editBlogById(blogId, blogNewData) {
+  let blog = await BlogModel.findById(blogId).lean();
+  blog = { ...blog, ...blogNewData };
+  return blog;
 }
 module.exports = {
   createBlog,

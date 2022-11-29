@@ -9,6 +9,11 @@ router.get("/", async (req, res) => {
   try {
     const blogs = await blogService.getBlogs();
     blogs.forEach((singleBlog) => {
+      if (req.user !== undefined) {
+        singleBlog.isOwner = singleBlog.author._id.toString() === req.user._id;
+      } else {
+        singleBlog.isOwner = false;
+      }
       singleBlog.author = singleBlog.author.username;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
       singleBlog.readTime = Math.ceil(
@@ -25,6 +30,7 @@ router.get("/category/:category", async (req, res) => {
   try {
     const blogs = await blogService.getBlogsByCategory(req.params.category);
     blogs.forEach((singleBlog) => {
+      singleBlog.isOwner = singleBlog.author._id.toString() === req.user._id;
       singleBlog.author = singleBlog.author.email;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
       singleBlog.readTime = Math.ceil(
@@ -104,6 +110,7 @@ router.get("/search/:title", async (req, res) => {
     const title = req.params.title;
     const blogs = await blogService.getSeachedBlogs(title);
     blogs.forEach((singleBlog) => {
+      singleBlog.isOwner = singleBlog.author._id.toString() === req.user._id;
       singleBlog.author = singleBlog.author.username;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
       singleBlog.readTime = Math.ceil(
@@ -111,6 +118,15 @@ router.get("/search/:title", async (req, res) => {
       );
     });
     res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ "error-message": error.message });
+  }
+});
+
+router.get("/edit/:id", async (req, res) => {
+  try {
+    const blogNewData = req.body;
   } catch (error) {
     console.log(error);
     res.status(400).json({ "error-message": error.message });

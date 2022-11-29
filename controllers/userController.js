@@ -44,6 +44,7 @@ router.get("/bookmarked", async (req, res) => {
   try {
     const bookmarks = await userService.getBookmarks(req.user._id);
     bookmarks.forEach((singleBlog) => {
+      singleBlog.isOwner = singleBlog.author._id.toString() === req.user._id;
       singleBlog.author = singleBlog.author.username;
       singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
       singleBlog.readTime = Math.ceil(
@@ -73,6 +74,23 @@ router.get("/commented-blogs", isUser(), async (req, res) => {
   } catch (error) {
     res.status(400).json({ "error-message": error.message });
     console.log(error);
+  }
+});
+router.get("/edit", async (req, res) => {
+  try {
+    const blogs = await userService.getUserOwnBlogs(req.user._id);
+    blogs.forEach((singleBlog) => {
+      singleBlog.isOwner = singleBlog.author._id.toString() === req.user._id;
+      singleBlog.author = singleBlog.author.username;
+      singleBlog.createdAt = singleBlog.createdAt.toISOString().split("T")[0];
+      singleBlog.readTime = Math.ceil(
+        singleBlog.description.split(" ").length / 200
+      );
+    });
+    res.status(201).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ "error-message": error.message });
   }
 });
 module.exports = router;
