@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/User");
+const BlogModel = require("../models/Blog");
 const { TOKEN_SECRET } = require("../config/basic");
 
 async function createUser(email, username, hashedPassword) {
@@ -52,7 +53,7 @@ function generateToken(userData) {
       _id: userData._id,
       email: userData.email,
     },
-    TOKEN_SECRET,
+    TOKEN_SECRET
   );
   return token;
 }
@@ -100,7 +101,7 @@ async function removeFromBookmarks(blogId, userId) {
   }
   user.bookmarks.splice(
     user.bookmarks.indexOf(mongoose.Types.ObjectId(blogId)),
-    1,
+    1
   );
   await user.save();
 }
@@ -112,6 +113,13 @@ async function getCommentedBlogs(userId) {
     })
     .lean();
   return user.commentedBlogs;
+}
+async function getUserOwnBlogs(userId) {
+  const user = new mongoose.Types.ObjectId(userId);
+  const blogs = await BlogModel.find({ author: user })
+    .populate("author")
+    .lean();
+  return blogs;
 }
 module.exports = {
   createUser,
@@ -126,4 +134,5 @@ module.exports = {
   getBookmarks,
   removeFromBookmarks,
   getCommentedBlogs,
+  getUserOwnBlogs,
 };

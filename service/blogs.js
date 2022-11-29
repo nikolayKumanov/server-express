@@ -41,6 +41,11 @@ async function getSeachedBlogs(title) {
     .lean();
   return blogs;
 }
+async function editBlogById(blogId, blogNewData) {
+  let blog = await BlogModel.findById(blogId).lean();
+  blog = { ...blog, ...blogNewData };
+  return blog;
+}
 module.exports = {
   createBlog,
   getBlogs,
